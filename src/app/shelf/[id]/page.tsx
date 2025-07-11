@@ -44,7 +44,7 @@ export default function ShelfDetailPage() {
     try {
       setLoading(true)
       setError(null)
-      const bookIds = await fetchShelfBooks()
+      const bookIds = await fetchShelfBooks(shelfId)
       setAllBookIds(bookIds)
       setTotalBooks(bookIds.length)
       setCurrentPage(1)
