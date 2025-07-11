@@ -1,6 +1,5 @@
 'use client'
-
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
@@ -14,83 +13,81 @@ import { fetchShelfBooks, fetchBooksWithPagination, Book } from '@/lib/api'
 const BOOKS_PER_PAGE = 10
 
 export default function ShelfDetailPage() {
-  const params = useParams();
-  const shelfId = params.id as string;
+  const params = useParams()
+  const shelfId = params.id as string
+  const [books, setBooks] = useState<Book[]>([])
+  const [allBookIds, setAllBookIds] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loadingBooks, setLoadingBooks] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [totalBooks, setTotalBooks] = useState(0)
 
-  const [books, setBooks] = useState<Book[]>([]);
-  const [allBookIds, setAllBookIds] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingBooks, setLoadingBooks] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [totalBooks, setTotalBooks] = useState(0);
-
-  const loadBooksForPage = async (page: number) => {
+  const loadBooksForPage = useCallback(async (page: number) => {
     try {
-      setLoadingBooks(true);
+      setLoadingBooks(true)
       const { books: pageBooks } = await fetchBooksWithPagination(
         allBookIds,
         page,
         BOOKS_PER_PAGE
-      );
-      setBooks(pageBooks);
+      )
+      setBooks(pageBooks)
     } catch (err) {
-      console.error('Error loading books for page:', err);
+      console.error('Error loading books for page:', err)
     } finally {
-      setLoadingBooks(false);
+      setLoadingBooks(false)
     }
-  };
+  }, [allBookIds])
 
-  const loadShelfBooks = async () => {
+  const loadShelfBooks = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
-      const bookIds = await fetchShelfBooks();
-      setAllBookIds(bookIds);
-      setTotalBooks(bookIds.length);
-      setCurrentPage(1);
+      setLoading(true)
+      setError(null)
+      const bookIds = await fetchShelfBooks()
+      setAllBookIds(bookIds)
+      setTotalBooks(bookIds.length)
+      setCurrentPage(1)
     } catch (err) {
-      setError('Impossible de charger les livres de cette étagère.');
-      console.error('Error loading shelf books:', err);
+      setError('Impossible de charger les livres de cette étagère.')
+      console.error('Error loading shelf books:', err)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }, [shelfId])
 
   const filteredBooks = useMemo(() => {
-    if (!searchQuery.trim()) return books;
+    if (!searchQuery.trim()) return books
     return books.filter(book =>
       book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       book.authors.some(author =>
         author.name.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    );
-  }, [books, searchQuery]);
+    )
+  }, [books, searchQuery])
 
-  const totalPages = Math.ceil(totalBooks / BOOKS_PER_PAGE);
+  const totalPages = Math.ceil(totalBooks / BOOKS_PER_PAGE)
 
   useEffect(() => {
     if (shelfId) {
-      loadShelfBooks();
+      loadShelfBooks()
     }
-  }, [shelfId]);
+  }, [shelfId, loadShelfBooks])
 
   useEffect(() => {
     if (allBookIds.length > 0) {
-      loadBooksForPage(currentPage);
+      loadBooksForPage(currentPage)
     }
-  }, [currentPage, allBookIds, loadBooksForPage]);
+  }, [currentPage, allBookIds, loadBooksForPage])
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   const handleSearchChange = (query: string) => {
-    setSearchQuery(query);
-  };
-
+    setSearchQuery(query)
+  }
 
   if (loading) {
     return (
@@ -110,7 +107,7 @@ export default function ShelfDetailPage() {
             <div className="text-red-500 text-6xl mb-4">📚</div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Erreur de chargement</h2>
             <p className="text-gray-600 mb-6">{error}</p>
-            <Link 
+            <Link
               href="/"
               className="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors inline-flex items-center"
             >
@@ -125,12 +122,12 @@ export default function ShelfDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header 
-        showSearch={true} 
-        searchQuery={searchQuery} 
-        onSearchChange={handleSearchChange} 
+      <Header
+        showSearch={true}
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
       />
-      
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -138,7 +135,7 @@ export default function ShelfDetailPage() {
           transition={{ duration: 0.3 }}
           className="mb-6"
         >
-          <Link 
+          <Link
             href="/"
             className="text-primary hover:text-primary/80 transition-colors inline-flex items-center text-sm font-medium"
           >
@@ -146,7 +143,6 @@ export default function ShelfDetailPage() {
             Retour aux étagères
           </Link>
         </motion.div>
-
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -154,7 +150,7 @@ export default function ShelfDetailPage() {
           className="mb-8"
         >
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-            Livres de l\'étagère
+            Livres de l&apos;étagère
           </h1>
           <p className="text-gray-600">
             {searchQuery ? (
@@ -167,9 +163,7 @@ export default function ShelfDetailPage() {
               </>
             )}
           </p>
-
         </motion.div>
-
         {loadingBooks ? (
           <LoadingSpinner text="Chargement des livres..." />
         ) : filteredBooks.length > 0 ? (
@@ -181,14 +175,13 @@ export default function ShelfDetailPage() {
               className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-8"
             >
               {filteredBooks.map((book, index) => (
-                <BookCard 
-                  key={book.id} 
-                  book={book} 
+                <BookCard
+                  key={book.id}
+                  book={book}
                   index={index}
                 />
               ))}
             </motion.div>
-            
 
             {!searchQuery && totalPages > 1 && (
               <motion.div
@@ -219,8 +212,8 @@ export default function ShelfDetailPage() {
               {searchQuery ? 'Aucun résultat trouvé' : 'Aucun livre dans cette étagère'}
             </h3>
             <p className="text-gray-600">
-              {searchQuery 
-                ? 'Essayez avec d\'autres mots-clés.' 
+              {searchQuery
+                ? 'Essayez avec d&apos;autres mots-clés.'
                 : 'Cette étagère semble être vide pour le moment.'
               }
             </p>
