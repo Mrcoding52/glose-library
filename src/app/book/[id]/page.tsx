@@ -3,11 +3,10 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ArrowLeft, BookOpen, Calendar, Globe, Tag, User, Eye, Download } from 'lucide-react'
-import Link from 'next/link'
 import { fetchBookDetails, Book } from '@/lib/api'
 import Header from '@/components/Header'
 import LoadingSpinner from '@/components/LoadingSpinner'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
@@ -20,15 +19,7 @@ export default function BookDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    console.log(`Book ID from URL: ${bookId}`); // Log pour vérifier l'ID du livre extrait de l'URL
-    if (bookId) {
-      loadBookDetails();
-    } else {
-      // Testez avec un ID codé en dur pour isoler le problème
-      loadBookDetailsWithHardcodedId();
-    }
-  }, [bookId]);
+  
 
   const loadBookDetails = async () => {
     try {
@@ -45,6 +36,16 @@ export default function BookDetailPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    console.log(`Book ID from URL: ${bookId}`); // Log pour vérifier l'ID du livre extrait de l'URL
+    if (bookId) {
+      loadBookDetails();
+    } else {
+      // Testez avec un ID codé en dur pour isoler le problème
+      loadBookDetailsWithHardcodedId();
+    }
+  }, [bookId]);
 
   const loadBookDetailsWithHardcodedId = async () => {
     const hardcodedId = '5b27a9b016786c5a860f957e'; // Remplacez par un ID de livre valide

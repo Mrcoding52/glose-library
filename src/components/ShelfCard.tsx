@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { User, BookOpen } from 'lucide-react';
 import { Shelf } from '@/lib/api';
+import Image from 'next/image';
 
 interface ShelfCardProps {
   shelf: Shelf;
@@ -24,11 +25,14 @@ const ShelfCard: React.FC<ShelfCardProps> = ({ shelf, index }) => {
           <div className="flex items-center space-x-3 mb-4">
             <div className="relative">
               {shelf.user.image ? (
-                <img
-                  src={shelf.user.image}
+                <Image 
+                
+                src={shelf.user.image}
                   alt={shelf.user.name}
                   className="w-10 h-10 rounded-full object-cover"
-                />
+
+                >
+                </Image>
               ) : (
                 <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                   <User className="h-5 w-5 text-primary" />

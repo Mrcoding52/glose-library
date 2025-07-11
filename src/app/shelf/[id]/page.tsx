@@ -15,7 +15,6 @@ const BOOKS_PER_PAGE = 10
 
 export default function ShelfDetailPage() {
   const params = useParams()
-  const router = useRouter()
   const shelfId = params.id as string
   
   const [books, setBooks] = useState<Book[]>([])

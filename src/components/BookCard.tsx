@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Star, Tag } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { Book } from '@/lib/api';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface BookCardProps {
   book: Book;
@@ -26,11 +27,12 @@ const BookCard: React.FC<BookCardProps> = ({ book, index }) => {
         {/* Book Cover */}
         <div className="aspect-[3/4] relative bg-gray-100">
           {book.image ? (
-            <img
+            <Image
               src={book.image}
               alt={book.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
+            >
+              </Image>
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
               <div className="text-center p-4">
