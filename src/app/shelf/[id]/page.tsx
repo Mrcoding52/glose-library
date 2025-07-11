@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
@@ -14,85 +14,82 @@ import { fetchShelfBooks, fetchBooksWithPagination, Book } from '@/lib/api'
 const BOOKS_PER_PAGE = 10
 
 export default function ShelfDetailPage() {
-  const params = useParams()
-  const shelfId = params.id as string
-  
-  const [books, setBooks] = useState<Book[]>([])
-  const [allBookIds, setAllBookIds] = useState<string[]>([])
-  const [loading, setLoading] = useState(true)
-  const [loadingBooks, setLoadingBooks] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [totalBooks, setTotalBooks] = useState(0)
+  const params = useParams();
+  const shelfId = params.id as string;
 
-  const filteredBooks = useMemo(() => {
-  if (!searchQuery.trim()) return books;
-
-  return books.filter(book =>
-    book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    book.authors.some(author =>
-      author.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
-}, [books, searchQuery]);
-
-
-  const totalPages = Math.ceil(totalBooks / BOOKS_PER_PAGE)
-
-  useEffect(() => {
-    if (shelfId) {
-      loadShelfBooks()
-    }
-  }, [shelfId])
-
-  useEffect(() => {
-    if (allBookIds.length > 0) {
-      loadBooksForPage(currentPage)
-    }
-  }, [currentPage, allBookIds])
-
-  const loadShelfBooks = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const bookIds = await fetchShelfBooks(shelfId)
-      setAllBookIds(bookIds)
-      setTotalBooks(bookIds.length)
-      setCurrentPage(1)
-    } catch (err) {
-      setError('Impossible de charger les livres de cette étagère.')
-      console.error('Error loading shelf books:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const [books, setBooks] = useState<Book[]>([]);
+  const [allBookIds, setAllBookIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingBooks, setLoadingBooks] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [totalBooks, setTotalBooks] = useState(0);
 
   const loadBooksForPage = async (page: number) => {
     try {
-      setLoadingBooks(true)
+      setLoadingBooks(true);
       const { books: pageBooks } = await fetchBooksWithPagination(
         allBookIds,
         page,
         BOOKS_PER_PAGE
-      )
-      setBooks(pageBooks)
+      );
+      setBooks(pageBooks);
     } catch (err) {
-      console.error('Error loading books for page:', err)
+      console.error('Error loading books for page:', err);
     } finally {
-      setLoadingBooks(false)
+      setLoadingBooks(false);
     }
-  }
+  };
+
+  const loadShelfBooks = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const bookIds = await fetchShelfBooks();
+      setAllBookIds(bookIds);
+      setTotalBooks(bookIds.length);
+      setCurrentPage(1);
+    } catch (err) {
+      setError('Impossible de charger les livres de cette étagère.');
+      console.error('Error loading shelf books:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredBooks = useMemo(() => {
+    if (!searchQuery.trim()) return books;
+    return books.filter(book =>
+      book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      book.authors.some(author =>
+        author.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    );
+  }, [books, searchQuery]);
+
+  const totalPages = Math.ceil(totalBooks / BOOKS_PER_PAGE);
+
+  useEffect(() => {
+    if (shelfId) {
+      loadShelfBooks();
+    }
+  }, [shelfId]);
+
+  useEffect(() => {
+    if (allBookIds.length > 0) {
+      loadBooksForPage(currentPage);
+    }
+  }, [currentPage, allBookIds]);
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleSearchChange = (query: string) => {
-    setSearchQuery(query)
-  }
-  console.log(BookCard);
+    setSearchQuery(query);
+  };
 
 
   if (loading) {
@@ -162,7 +159,7 @@ export default function ShelfDetailPage() {
           <p className="text-gray-600">
             {searchQuery ? (
               <>
-                {filteredBooks.length} résultat{filteredBooks.length !== 1 ? 's' : ''} pour "{searchQuery}"
+                {filteredBooks.length} résultat{filteredBooks.length !== 1 ? 's' : ''} pour &quot;{searchQuery}&quot;
               </>
             ) : (
               <>
@@ -170,6 +167,7 @@ export default function ShelfDetailPage() {
               </>
             )}
           </p>
+
         </motion.div>
 
         {loadingBooks ? (

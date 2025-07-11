@@ -26,8 +26,9 @@ const ShelfCard: React.FC<ShelfCardProps> = ({ shelf, index }) => {
             <div className="relative">
               {shelf.user.image ? (
                 <Image 
-                
-                src={shelf.user.image}
+                  width={40}
+                  height={400}
+                  src={shelf.user.image}
                   alt={shelf.user.name}
                   className="w-10 h-10 rounded-full object-cover"
 

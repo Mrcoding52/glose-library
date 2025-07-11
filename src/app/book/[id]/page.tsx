@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ArrowLeft, BookOpen, Calendar, Globe, Tag, User, Eye, Download } from 'lucide-react'
@@ -9,60 +9,36 @@ import LoadingSpinner from '@/components/LoadingSpinner'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import Image from 'next/image'
 
 export default function BookDetailPage() {
   const router = useRouter()
-  const params = useParams();
-  const bookId = params.id as string;
+  const params = useParams()
+  const bookId = params.id as string
+  const [book, setBook] = useState<Book | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const [book, setBook] = useState<Book | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  
-
-  const loadBookDetails = async () => {
+  const loadBookDetails = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
-      console.log(`Loading details for book ID: ${bookId}`);
-      const bookData = await fetchBookDetails(bookId);
-      console.log(`Book details loaded successfully for ID: ${bookId}`);
-      setBook(bookData);
+      setLoading(true)
+      setError(null)
+      const bookData = await fetchBookDetails(bookId)
+      console.log(`Book details loaded successfully for ID: ${bookId}`)
+      setBook(bookData)
     } catch (err) {
-      setError('Impossible de charger les détails de ce livre.');
-      console.error(`Error loading book details for ID: ${bookId}`, err);
+      setError('Impossible de charger les détails de ce livre.')
+      console.error(`Error loading book details for ID: ${bookId}`, err)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }, [bookId])
 
   useEffect(() => {
-    console.log(`Book ID from URL: ${bookId}`); // Log pour vérifier l'ID du livre extrait de l'URL
     if (bookId) {
-      loadBookDetails();
-    } else {
-      // Testez avec un ID codé en dur pour isoler le problème
-      loadBookDetailsWithHardcodedId();
+      loadBookDetails()
     }
-  }, [bookId]);
-
-  const loadBookDetailsWithHardcodedId = async () => {
-    const hardcodedId = '5b27a9b016786c5a860f957e'; // Remplacez par un ID de livre valide
-    try {
-      setLoading(true);
-      setError(null);
-      console.log(`Loading details for hardcoded book ID: ${hardcodedId}`);
-      const bookData = await fetchBookDetails(hardcodedId);
-      console.log(`Book details loaded successfully for hardcoded ID: ${hardcodedId}`);
-      setBook(bookData);
-    } catch (err) {
-      setError('Impossible de charger les détails de ce livre.');
-      console.error(`Error loading book details for hardcoded ID: ${hardcodedId}`, err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [bookId, loadBookDetails])
 
   if (loading) {
     return (
@@ -95,7 +71,6 @@ export default function BookDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <motion.div
@@ -126,7 +101,9 @@ export default function BookDetailPage() {
               <CardContent className="p-0">
                 <div className="aspect-[3/4] relative">
                   {book.image ? (
-                    <img
+                    <Image
+                      width={300}
+                      height={400}
                       src={book.image}
                       alt={book.title}
                       className="w-full h-full object-cover"
@@ -136,7 +113,6 @@ export default function BookDetailPage() {
                       <BookOpen className="h-16 w-16 text-primary/40" />
                     </div>
                   )}
-
                   {/* Free Badge */}
                   {book.is_free && (
                     <div className="absolute top-4 right-4">
@@ -156,7 +132,6 @@ export default function BookDetailPage() {
                   Lire le livre
                 </Button>
               )}
-
               {book.can.print && (
                 <Button variant="outline" className="w-full" size="lg">
                   <Download className="h-4 w-4 mr-2" />
@@ -177,7 +152,6 @@ export default function BookDetailPage() {
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
                 {book.title}
               </h1>
-
               {book.authors.length > 0 && (
                 <div className="flex items-center text-lg text-gray-600 mb-4">
                   <User className="h-5 w-5 mr-2" />
