@@ -78,9 +78,10 @@ export const fetchUserShelves = async (userId: string): Promise<Shelf[]> => {
 };
 
 // Récupérer les IDs des livres d'une étagère
-export const fetchShelfBooks = async (): Promise<string[]> => {
+export const fetchShelfBooks = async (shelfId: string): Promise<string[]> => {
+    shelfId ='5c617433fefd4c0001f061c8'; // Default shelf ID if not provided
   try {
-    const response = await api.get(`/shelves/5c617433fefd4c0001f061c8/forms`);
+    const response = await api.get(`/shelves/${shelfId}/forms`);
     return response.data.forms || response.data;
   } catch (error) {
     console.error('Error fetching shelf books:', error);
