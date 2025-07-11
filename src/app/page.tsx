@@ -48,7 +48,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
             <div className="text-red-500 text-6xl mb-4">📚</div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Oups ! Une erreur s'est produite</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Oups ! Une erreur s\'est produite</h2>
             <p className="text-gray-600 mb-6">{error}</p>
             <button
               onClick={loadShelves}
@@ -136,7 +136,7 @@ export default function HomePage() {
               Aucune étagère trouvée
             </h3>
             <p className="text-gray-600">
-              Il semble qu'il n'y ait pas d'étagères disponibles pour le moment.
+              Il semble qu\'il n\'y ait pas d\'étagères disponibles pour le moment.
             </p>
           </motion.div>
         )}

@@ -80,7 +80,7 @@ export default function ShelfDetailPage() {
     if (allBookIds.length > 0) {
       loadBooksForPage(currentPage);
     }
-  }, [currentPage, allBookIds]);
+  }, [currentPage, allBookIds, loadBooksForPage]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -154,7 +154,7 @@ export default function ShelfDetailPage() {
           className="mb-8"
         >
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-            Livres de l'étagère
+            Livres de l\'étagère
           </h1>
           <p className="text-gray-600">
             {searchQuery ? (
